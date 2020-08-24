@@ -1,0 +1,87 @@
+body {
+  font-family: Fira Code;
+  background-color: $body-bg;
+  color: $body-color;
+}
+
+header {
+  background-color: $color-primary;
+  color: $body-bg;
+}
+
+.spacer {
+  min-height: 25vh;
+}
+
+em {
+  color: $color-primary;
+}
+
+.ref {
+  background-color: $body-color;
+  color: $body-bg;
+}
+
+h1 {
+  text-align: center;
+}
+
+.ideal.active {
+  background-color: rgba(40, 167, 69, 1) !important;
+  color: $body-color;
+  padding: 20px;
+  border: rgba(40, 167, 69, 1) !important;
+}
+.ideal {
+  background-color: rgba(40, 167, 69, 0.6);
+  color: $body-color !important;
+  border: rgba(40, 167, 69, 0.6) !important;
+}
+
+.pain.active {
+  background-color: rgba(220, 53, 69, 1) !important;
+  color: $body-color;
+  padding: 20px;
+  border: rgba(220, 53, 69, 1) !important;
+}
+.pain {
+  background-color: rgba(220, 53, 69, 0.6);
+  color: #e4e4e4;
+  border: rgba(220, 53, 69, 0.6);
+}
+
+.warn.active {
+  background-color: rgb(255, 193, 8) !important;
+  color: #2d2d2d;
+  padding: 20px;
+  border: rgb(255, 193, 8) !important;
+}
+.warn {
+  background-color: rgba(255, 193, 8, 0.6);
+  color: #2d2d2d;
+  border: rgba(255, 193, 8, 0.6);
+}
+
+.sed.active {
+  background-color: rgba(92, 92, 92, 1);
+  color: $body-color;
+  padding: 20px;
+  border: rgb(92, 92, 92);
+}
+.sed {
+  background-color: rgba(92, 92, 92, 0.6);
+  color: $body-color;
+  border: rgba(92, 92, 92, 0.6);
+}
+
+.airway.active {
+  background-color: rgb(100, 100, 100);
+  color: $body-color;
+  padding: 20px;
+  border: rgb(100, 100, 100);
+}
+.airway {
+  background-color: rgba(100, 100, 100, 0.6);
+  color: $body-color;
+  border: rgba(100, 100, 100, 0.6);
+}
