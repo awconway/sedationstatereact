@@ -33,13 +33,6 @@ module.exports = {
     },
     `gatsby-plugin-sass`,
     {
-      resolve: `gatsby-plugin-purgecss`,
-      options: {
-        // printRejected: true, // Print removed selectors and processed file names
-        // develop: true, // Enable while using `gatsby develop`
-      },
-    },
-    {
       resolve: `gatsby-plugin-webfonts`,
       options: {
         fonts: {
