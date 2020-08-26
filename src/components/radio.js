@@ -9,7 +9,6 @@ defaults.global.defaultFontFamily = "Fira Code"
 
 export default function RadioHook() {
   const [state, setState] = useState("ideal")
-
   const [states, setStates] = useState([])
   const [times, setTimes] = useState([])
   const data = {

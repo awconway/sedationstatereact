@@ -5,6 +5,25 @@ import { Link } from "gatsby"
 import SedState from "../components/sedstate"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
+
+import ApolloClient from "apollo-client"
+import { HttpLink } from "apollo-link-http"
+import { InMemoryCache } from "apollo-cache-inmemory"
+
+const createApolloClient = authToken => {
+  return new ApolloClient({
+    link: new HttpLink({
+      uri: "https://honest-longhorn-93.hasura.app/v1/graphql",
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+        // "X-Hasura-Admin-Secret":
+        // "{admin-secret",
+      },
+    }),
+    cache: new InMemoryCache(),
+  })
+}
+
 const Home = ({ user }) => {
   return (
     <>
@@ -16,13 +35,14 @@ const Home = ({ user }) => {
   )
 }
 
-const Account = () => {
+const Account = ({ data }) => {
   if (!isAuthenticated()) {
     login()
     return <p>Redirecting to login...</p>
   }
 
   const user = getProfile()
+  const client = createApolloClient(user.idToken)
 
   return (
     <>
@@ -41,7 +61,7 @@ const Account = () => {
       </nav>
       <Router>
         <Home path="/account/" user={user} />
-        <SedState path="/account/sedstate" />
+        <SedState client={client} path="/account/sedstate" />
       </Router>
     </>
   )

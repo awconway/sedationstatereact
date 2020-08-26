@@ -1,6 +1,5 @@
-require("dotenv").config({
-  path: `.env.${process.env.NODE_ENV}`,
-})
+const fetch = require(`node-fetch`)
+const { createHttpLink } = require(`apollo-link-http`)
 
 module.exports = {
   siteMetadata: {
@@ -42,6 +41,20 @@ module.exports = {
               variants: ["300", "400", "500"],
             },
           ],
+        },
+      },
+    },
+    {
+      resolve: "gatsby-source-graphql",
+      options: {
+        typeName: "HASURA",
+        fieldName: "hasura",
+        createLink: pluginOptions => {
+          return createHttpLink({
+            uri: "https://honest-longhorn-93.hasura.app/v1/graphql",
+            headers: {},
+            fetch,
+          })
         },
       },
     },
