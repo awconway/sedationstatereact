@@ -1,11 +1,8 @@
-const fetch = require(`node-fetch`)
-const { createHttpLink } = require(`apollo-link-http`)
-
 module.exports = {
   siteMetadata: {
     title: `Sedation state assessment`,
-    description: `Kick off your next, great Gatsby project with this default starter. This barebones starter ships with the main Gatsby configuration files you might need.`,
-    author: `@gatsbyjs`,
+    description: `Data collection app for sedation state assessments`,
+    author: `@aw_conway`,
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
@@ -44,22 +41,5 @@ module.exports = {
         },
       },
     },
-    // {
-    //   resolve: "gatsby-source-graphql",
-    //   options: {
-    //     typeName: "HASURA",
-    //     fieldName: "hasura",
-    //     createLink: pluginOptions => {
-    //       return createHttpLink({
-    //         uri: "https://honest-longhorn-93.hasura.app/v1/graphql",
-    //         headers: {},
-    //         fetch,
-    //       })
-    //     },
-    //   },
-    // },
-    // this (optional) plugin enables Progressive Web App + Offline functionality
-    // To learn more, visit: https://gatsby.dev/offline
-    // `gatsby-plugin-offline`,
   ],
 }

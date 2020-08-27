@@ -1,84 +1,256 @@
-import React from "react"
-import { ApolloProvider } from "react-apollo"
-import { Query } from "react-apollo"
+import React, { useState, useEffect } from "react"
+import { ApolloProvider } from "@apollo/client"
 import gql from "graphql-tag"
 import { getProfile } from "../utils/auth"
 
 import Layout from "./layout"
 
-import Radio from "./radio"
+import ButtonGroup from "react-bootstrap/ButtonGroup"
+import ToggleButton from "react-bootstrap/ToggleButton"
+import { Row, Col, Form } from "react-bootstrap"
+import moment from "moment"
 
-const query = gql`
-  query {
-    states {
-      state
-      time
-      user_id
-    }
-  }
-`
+//Optional chart
 
-const mutation = gql`
-  mutation statesMutation(
-    $state: String = ""
-    $time: String = ""
-    $user_id: String = ""
-  ) {
-    insert_states(objects: { state: $state, time: $time, user_id: $user_id }) {
-      returning {
-        id
-      }
-    }
-  }
-`
-const user = getProfile()
+import { defaults, Line } from "react-chartjs-2"
+defaults.global.defaultFontFamily = "Fira Code"
 
 export default function SedationState({ client }) {
-  const createPlaylist = () => {
+  const [pid, setPid] = useState()
+  const [state, setState] = useState("onload")
+
+  const mutation = gql`
+    mutation statesMutation(
+      $user_id: String = ""
+      $time: String = ""
+      $state: String = ""
+      $pid: String = ""
+    ) {
+      insert_states(
+        objects: { pid: $pid, state: $state, time: $time, user_id: $user_id }
+      ) {
+        returning {
+          id
+        }
+      }
+    }
+  `
+
+  const radios = [{ name: "Ideal", class: "ideal mx-2 my-2" }]
+  const radioWarn = [
+    { name: "Expression of pain on face", class: "warn mx-2 my-2" },
+    {
+      name: "Movement requiring gentle immobilization",
+      class: "warn mx-2 my-2",
+    },
+  ]
+  const radioPmip = [
+    {
+      name: "Pain and movement impeding procedure",
+      class: "pain mx-2 my-2",
+    },
+  ]
+
+  const radioPain = [
+    {
+      name: "Movement impeding procedure",
+      class: "pain mx-2 my-2",
+    },
+    {
+      name: "Pain impeding procedure",
+      class: "pain mx-2 my-2",
+    },
+  ]
+
+  const radioSed = [
+    {
+      name: "Airway intervention",
+      class: "airway mx-2 my-2",
+    },
+    {
+      name: "Over-sedated",
+      class: "sed mx-2 my-2",
+    },
+  ]
+
+  useEffect(() => {
+    // change this to sending to database
+    const user = getProfile()
     client.mutate({
       mutation: mutation,
       variables: {
-        state: "warn",
-        time: Date(),
+        pid: pid,
+        state: state,
+        time: moment().format("YYYY-MM-DD h:mm:ss SSS"),
         user_id: user["https://hasura.io/jwt/claims"]["x-hasura-user-id"],
       },
     })
+  }, [state])
+
+  //Chart
+
+  const [states, setStates] = useState([])
+  const [times, setTimes] = useState([])
+  const data = {
+    labels: times,
+    datasets: [
+      {
+        label: "Sedation state",
+        fill: false,
+        borderColor: "#e4e4e4",
+        data: states,
+        steppedLine: true,
+      },
+    ],
   }
+
+  const options = {
+    elements: {
+      point: {
+        radius: 0,
+      },
+    },
+    scales: {
+      yAxes: [
+        {
+          type: "category",
+          labels: [
+            "Pain and movement impeding procedure",
+            "Movement impeding procedure",
+            "Pain impeding procedure",
+            "Expression of pain on face",
+            "Movement requiring gentle immobilization",
+            "Ideal",
+            "Airway intervention",
+            "Over-sedated",
+          ],
+        },
+      ],
+    },
+  }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStates(states => states.concat(state))
+      setTimes(times => times.concat(moment().format("h:mm:ss A")))
+      //   console.log(states)
+    }, 1000)
+    return () => clearInterval(interval)
+  })
+
+  ///
 
   return (
     <>
-      <Layout>
-        <Radio />
-        <ApolloProvider client={client}>
-          <button onClick={() => createPlaylist()}>Create</button>
-
-          <Query query={query}>
-            {({ loading, error, data, client }) => {
-              if (loading) {
-                return <div>Loading...</div>
-              }
-
-              if (error) {
-                console.error(error)
-                return <div>Error!</div>
-              }
-              return (
-                <div>
-                  {data.states.map((states, index) => (
-                    <div key={index}>
-                      <ul>
-                        <li>{states.state}</li>
-                        <li>{states.time}</li>
-                        <li>{states.user_id}</li>
-                      </ul>
-                    </div>
+      <ApolloProvider client={client}>
+        <Layout>
+          <Row className="mx-auto text-center">
+            <Col>
+              <Form.Control
+                type="text"
+                placeholder="Enter participant ID"
+                onChange={e => setPid(e.currentTarget.value)}
+              />
+              <ButtonGroup toggle vertical="true">
+                <ButtonGroup toggle>
+                  {radioPmip.map((radio, idx) => (
+                    <ToggleButton
+                      key={idx}
+                      size="xxl"
+                      type="radio"
+                      variant="light"
+                      name="state"
+                      value={radio.name}
+                      checked={state === radio.name}
+                      onChange={e => setState(e.currentTarget.value)}
+                      className={radio.class}
+                    >
+                      {radio.name}
+                    </ToggleButton>
                   ))}
-                </div>
-              )
-            }}
-          </Query>
-        </ApolloProvider>
-      </Layout>
+                </ButtonGroup>
+                <br></br>
+                <ButtonGroup toggle>
+                  {radioPain.map((radio, idx) => (
+                    <ToggleButton
+                      key={idx}
+                      size="xxl"
+                      type="radio"
+                      variant="light"
+                      name="state"
+                      value={radio.name}
+                      checked={state === radio.name}
+                      onChange={e => setState(e.currentTarget.value)}
+                      className={radio.class}
+                    >
+                      {radio.name}
+                    </ToggleButton>
+                  ))}
+                </ButtonGroup>
+                <br></br>
+                <ButtonGroup toggle>
+                  {radioWarn.map((radio, idx) => (
+                    <ToggleButton
+                      key={idx}
+                      size="xxl"
+                      type="radio"
+                      variant="light"
+                      name="state"
+                      value={radio.name}
+                      checked={state === radio.name}
+                      onChange={e => setState(e.currentTarget.value)}
+                      className={radio.class}
+                    >
+                      {radio.name}
+                    </ToggleButton>
+                  ))}
+                </ButtonGroup>
+                <br></br>
+                <ButtonGroup toggle>
+                  {radios.map((radio, idx) => (
+                    <ToggleButton
+                      key={idx}
+                      size="xxl"
+                      type="radio"
+                      variant="light"
+                      name="state"
+                      value={radio.name}
+                      checked={state === radio.name}
+                      onChange={e => setState(e.currentTarget.value)}
+                      className={radio.class}
+                    >
+                      {radio.name}
+                    </ToggleButton>
+                  ))}
+                </ButtonGroup>
+                <br></br>
+                <ButtonGroup toggle>
+                  {radioSed.map((radio, idx) => (
+                    <ToggleButton
+                      key={idx}
+                      size="xxl"
+                      type="radio"
+                      variant="light"
+                      name="state"
+                      value={radio.name}
+                      checked={state === radio.name}
+                      onChange={e => setState(e.currentTarget.value)}
+                      className={radio.class}
+                    >
+                      {radio.name}
+                    </ToggleButton>
+                  ))}
+                </ButtonGroup>
+              </ButtonGroup>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Line data={data} options={options} />
+            </Col>
+          </Row>
+        </Layout>
+      </ApolloProvider>
     </>
   )
 }

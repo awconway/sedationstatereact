@@ -12,9 +12,7 @@ import SedState from "../components/sedstate"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 
-import ApolloClient from "apollo-client"
-import { HttpLink } from "apollo-link-http"
-import { InMemoryCache } from "apollo-cache-inmemory"
+import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client"
 
 const createApolloClient = authToken => {
   return new ApolloClient({
