@@ -2,6 +2,7 @@ import React from "react"
 import { ApolloProvider } from "react-apollo"
 import { Query } from "react-apollo"
 import gql from "graphql-tag"
+import { getProfile } from "../utils/auth"
 
 import Layout from "./layout"
 
@@ -30,15 +31,16 @@ const mutation = gql`
     }
   }
 `
+const user = getProfile()
 
-const SedationState = ({ client }) => {
+export default function SedationState({ client }) {
   const createPlaylist = () => {
     client.mutate({
       mutation: mutation,
       variables: {
         state: "warn",
-        time: "later",
-        user_id: "auth0|5f406d4538d1a2006d21bc1e",
+        time: Date(),
+        user_id: user["https://hasura.io/jwt/claims"]["x-hasura-user-id"],
       },
     })
   }
@@ -80,5 +82,3 @@ const SedationState = ({ client }) => {
     </>
   )
 }
-
-export default SedationState

@@ -70,6 +70,9 @@ export const handleAuthentication = () => {
 export const getProfile = () => {
   return user
 }
+export const getToken = () => {
+  return tokens.idToken
+}
 
 export const silentAuth = callback => {
   if (!isAuthenticated()) return callback()
