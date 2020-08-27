@@ -16,7 +16,7 @@ import { defaults, Line } from "react-chartjs-2"
 defaults.global.defaultFontFamily = "Fira Code"
 
 export default function SedationState({ client }) {
-  const [pid, setPid] = useState()
+  const [pid, setPid] = useState(null)
   const [state, setState] = useState("onload")
 
   const mutation = gql`
@@ -76,15 +76,20 @@ export default function SedationState({ client }) {
   useEffect(() => {
     // change this to sending to database
     const user = getProfile()
-    client.mutate({
-      mutation: mutation,
-      variables: {
-        pid: pid,
-        state: state,
-        time: moment().format("YYYY-MM-DD h:mm:ss SSS"),
-        user_id: user["https://hasura.io/jwt/claims"]["x-hasura-user-id"],
-      },
-    })
+    client
+      .mutate({
+        mutation: mutation,
+        variables: {
+          pid: pid,
+          state: state,
+          time: moment().format("YYYY-MM-DD h:mm:ss SSS"),
+          user_id: user["https://hasura.io/jwt/claims"]["x-hasura-user-id"],
+        },
+      })
+      .catch(error => {
+        console.log(error)
+        alert("Enter a participant ID")
+      })
   }, [state])
 
   //Chart
