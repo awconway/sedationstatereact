@@ -4,28 +4,6 @@ body {
   color: $body-color;
 }
 
-header {
-  background-color: $color-primary;
-  color: $body-bg;
-}
-
-.spacer {
-  min-height: 25vh;
-}
-
-em {
-  color: $color-primary;
-}
-
-.ref {
-  background-color: $body-color;
-  color: $body-bg;
-}
-
-h1 {
-  text-align: center;
-}
-
 .ideal.active {
   background-color: rgba(40, 167, 69, 1) !important;
   color: $body-color;

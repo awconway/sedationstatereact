@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { gql, useMutation } from "@apollo/client"
 import { getProfile } from "../utils/auth"
 
@@ -8,14 +8,14 @@ import { Container, Row, Col, Form, Alert, Button } from "react-bootstrap"
 import moment from "moment"
 
 //Optional chart
-import { defaults, Line } from "react-chartjs-2"
-defaults.global.defaultFontFamily = "Fira Code"
+// import { defaults, Line } from "react-chartjs-2"
+// defaults.global.defaultFontFamily = "Fira Code"
 //
 
 export default function SedationState({ client }) {
   const [pid, setPid] = useState(null)
-  const [state, setState] = useState("onload")
-  const [sync, setSync] = useState("synced time")
+  const [state, setState] = useState(null)
+  const [sync, setSync] = useState("Synced time")
   const mutation = gql`
     mutation statesMutation(
       $user_id: String = ""
@@ -35,7 +35,7 @@ export default function SedationState({ client }) {
   const [
     updateStates,
     {
-      // loading: mutationLoading, include if a loading sign is wanted
+      // loading: mutationLoading, //uncomment if a loading sign is wanted
       error: mutationError,
     },
   ] = useMutation(mutation)
@@ -77,68 +77,74 @@ export default function SedationState({ client }) {
     },
   ]
 
+  const isMounted = useRef(false)
+
   useEffect(() => {
-    const user = getProfile()
-    updateStates({
-      variables: {
-        pid: pid,
-        state: state,
-        time: moment().format("YYYY-MM-DD h:mm:ss SSS"),
-        user_id: user["https://hasura.io/jwt/claims"]["x-hasura-user-id"],
-      },
-    })
+    if (isMounted.current) {
+      const user = getProfile()
+      updateStates({
+        variables: {
+          pid: pid,
+          state: state,
+          time: moment().format("YYYY-MM-DD h:mm:ss SSS"),
+          user_id: user["https://hasura.io/jwt/claims"]["x-hasura-user-id"],
+        },
+      })
+    } else {
+      isMounted.current = true
+    }
   }, [state])
 
   //Chart
 
-  const [states, setStates] = useState([])
-  const [times, setTimes] = useState([])
-  const data = {
-    labels: times,
-    datasets: [
-      {
-        label: "Sedation state",
-        fill: false,
-        borderColor: "#e4e4e4",
-        data: states,
-        steppedLine: true,
-      },
-    ],
-  }
+  // const [states, setStates] = useState([])
+  // const [times, setTimes] = useState([])
+  // const data = {
+  //   labels: times,
+  //   datasets: [
+  //     {
+  //       label: "Sedation state",
+  //       fill: false,
+  //       borderColor: "#e4e4e4",
+  //       data: states,
+  //       steppedLine: true,
+  //     },
+  //   ],
+  // }
 
-  const options = {
-    elements: {
-      point: {
-        radius: 0,
-      },
-    },
-    scales: {
-      yAxes: [
-        {
-          type: "category",
-          labels: [
-            "Pain and movement impeding procedure",
-            "Movement impeding procedure",
-            "Pain impeding procedure",
-            "Expression of pain on face",
-            "Movement requiring gentle immobilization",
-            "Ideal",
-            "Airway intervention",
-            "Over-sedated",
-          ],
-        },
-      ],
-    },
-  }
+  // const options = {
+  //   elements: {
+  //     point: {
+  //       radius: 0,
+  //     },
+  //   },
+  //   scales: {
+  //     yAxes: [
+  //       {
+  //         type: "category",
+  //         labels: [
+  //           "Pain and movement impeding procedure",
+  //           "Movement impeding procedure",
+  //           "Pain impeding procedure",
+  //           "Expression of pain on face",
+  //           "Movement requiring gentle immobilization",
+  //           "Ideal",
+  //           "Airway intervention",
+  //           "Over-sedated",
+  //         ],
+  //       },
+  //     ],
+  //   },
+  // }
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setStates(states => states.concat(state))
-      setTimes(times => times.concat(moment().format("h:mm:ss A")))
-      //   console.log(states)
-    }, 1000)
-    return () => clearInterval(interval)
-  })
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setStates(states => states.concat(state))
+  //     setTimes(times => times.concat(moment().format("h:mm:ss A")))
+  //     //   console.log(states)
+  //   }, 1000)
+  //   return () => clearInterval(interval)
+  // })
 
   ///
 
@@ -151,19 +157,17 @@ export default function SedationState({ client }) {
               <Alert variant="info">Sending to database...</Alert>
             )} */}
             {mutationError && (
-              <Alert variant="warning">
-                Please ensure the participant ID is entered
-              </Alert>
+              <Alert variant="warning">Error sending to database</Alert>
             )}
             <Form.Control
               className="inputBox"
               type="text"
-              placeholder="Enter participant ID"
+              placeholder="Enter a participant ID in this box to enable the buttons"
               onChange={e => setPid(e.currentTarget.value)}
             />
             <br></br>
             <Row>
-              <Col>
+              <Col className="mx-auto">
                 <Button
                   size="lg"
                   variant="secondary"
@@ -174,7 +178,7 @@ export default function SedationState({ client }) {
                   Sync with video
                 </Button>
               </Col>
-              <Col>
+              <Col className="mx-auto">
                 <Button variant="outline-light disabled" size="lg">
                   {sync}
                 </Button>
@@ -195,6 +199,7 @@ export default function SedationState({ client }) {
                     checked={state === radio.name}
                     onChange={e => setState(e.currentTarget.value)}
                     className={radio.class}
+                    disabled={pid === null}
                   >
                     {radio.name}
                   </ToggleButton>
@@ -213,6 +218,7 @@ export default function SedationState({ client }) {
                     checked={state === radio.name}
                     onChange={e => setState(e.currentTarget.value)}
                     className={radio.class}
+                    disabled={pid === null}
                   >
                     {radio.name}
                   </ToggleButton>
@@ -231,6 +237,7 @@ export default function SedationState({ client }) {
                     checked={state === radio.name}
                     onChange={e => setState(e.currentTarget.value)}
                     className={radio.class}
+                    disabled={pid === null}
                   >
                     {radio.name}
                   </ToggleButton>
@@ -249,6 +256,7 @@ export default function SedationState({ client }) {
                     checked={state === radio.name}
                     onChange={e => setState(e.currentTarget.value)}
                     className={radio.class}
+                    disabled={pid === null}
                   >
                     {radio.name}
                   </ToggleButton>
@@ -267,6 +275,7 @@ export default function SedationState({ client }) {
                     checked={state === radio.name}
                     onChange={e => setState(e.currentTarget.value)}
                     className={radio.class}
+                    disabled={pid === null}
                   >
                     {radio.name}
                   </ToggleButton>
@@ -275,11 +284,9 @@ export default function SedationState({ client }) {
             </ButtonGroup>
           </Col>
         </Row>
-        <Row>
-          <Col>
-            <Line data={data} options={options} />
-          </Col>
-        </Row>
+        {/* <Row>
+          <Col><Line data={data} options={options} /></Col>
+        </Row> */}
       </Container>
     </>
   )
