@@ -1,24 +1,21 @@
 import React, { useState, useEffect } from "react"
-import { ApolloProvider } from "@apollo/client"
-import gql from "graphql-tag"
+import { gql, useMutation } from "@apollo/client"
 import { getProfile } from "../utils/auth"
-
-import Layout from "./layout"
 
 import ButtonGroup from "react-bootstrap/ButtonGroup"
 import ToggleButton from "react-bootstrap/ToggleButton"
-import { Row, Col, Form } from "react-bootstrap"
+import { Container, Row, Col, Form, Alert, Button } from "react-bootstrap"
 import moment from "moment"
 
 //Optional chart
-
 import { defaults, Line } from "react-chartjs-2"
 defaults.global.defaultFontFamily = "Fira Code"
+//
 
 export default function SedationState({ client }) {
   const [pid, setPid] = useState(null)
   const [state, setState] = useState("onload")
-
+  const [sync, setSync] = useState("synced time")
   const mutation = gql`
     mutation statesMutation(
       $user_id: String = ""
@@ -35,6 +32,13 @@ export default function SedationState({ client }) {
       }
     }
   `
+  const [
+    updateStates,
+    {
+      // loading: mutationLoading, include if a loading sign is wanted
+      error: mutationError,
+    },
+  ] = useMutation(mutation)
 
   const radios = [{ name: "Ideal", class: "ideal mx-2 my-2" }]
   const radioWarn = [
@@ -74,22 +78,15 @@ export default function SedationState({ client }) {
   ]
 
   useEffect(() => {
-    // change this to sending to database
     const user = getProfile()
-    client
-      .mutate({
-        mutation: mutation,
-        variables: {
-          pid: pid,
-          state: state,
-          time: moment().format("YYYY-MM-DD h:mm:ss SSS"),
-          user_id: user["https://hasura.io/jwt/claims"]["x-hasura-user-id"],
-        },
-      })
-      .catch(error => {
-        console.log(error)
-        alert("Enter a participant ID")
-      })
+    updateStates({
+      variables: {
+        pid: pid,
+        state: state,
+        time: moment().format("YYYY-MM-DD h:mm:ss SSS"),
+        user_id: user["https://hasura.io/jwt/claims"]["x-hasura-user-id"],
+      },
+    })
   }, [state])
 
   //Chart
@@ -147,115 +144,143 @@ export default function SedationState({ client }) {
 
   return (
     <>
-      <ApolloProvider client={client}>
-        <Layout>
-          <Row className="mx-auto text-center">
-            <Col>
-              <Form.Control
-                type="text"
-                placeholder="Enter participant ID"
-                onChange={e => setPid(e.currentTarget.value)}
-              />
-              <ButtonGroup toggle vertical="true">
-                <ButtonGroup toggle>
-                  {radioPmip.map((radio, idx) => (
-                    <ToggleButton
-                      key={idx}
-                      size="xxl"
-                      type="radio"
-                      variant="light"
-                      name="state"
-                      value={radio.name}
-                      checked={state === radio.name}
-                      onChange={e => setState(e.currentTarget.value)}
-                      className={radio.class}
-                    >
-                      {radio.name}
-                    </ToggleButton>
-                  ))}
-                </ButtonGroup>
-                <br></br>
-                <ButtonGroup toggle>
-                  {radioPain.map((radio, idx) => (
-                    <ToggleButton
-                      key={idx}
-                      size="xxl"
-                      type="radio"
-                      variant="light"
-                      name="state"
-                      value={radio.name}
-                      checked={state === radio.name}
-                      onChange={e => setState(e.currentTarget.value)}
-                      className={radio.class}
-                    >
-                      {radio.name}
-                    </ToggleButton>
-                  ))}
-                </ButtonGroup>
-                <br></br>
-                <ButtonGroup toggle>
-                  {radioWarn.map((radio, idx) => (
-                    <ToggleButton
-                      key={idx}
-                      size="xxl"
-                      type="radio"
-                      variant="light"
-                      name="state"
-                      value={radio.name}
-                      checked={state === radio.name}
-                      onChange={e => setState(e.currentTarget.value)}
-                      className={radio.class}
-                    >
-                      {radio.name}
-                    </ToggleButton>
-                  ))}
-                </ButtonGroup>
-                <br></br>
-                <ButtonGroup toggle>
-                  {radios.map((radio, idx) => (
-                    <ToggleButton
-                      key={idx}
-                      size="xxl"
-                      type="radio"
-                      variant="light"
-                      name="state"
-                      value={radio.name}
-                      checked={state === radio.name}
-                      onChange={e => setState(e.currentTarget.value)}
-                      className={radio.class}
-                    >
-                      {radio.name}
-                    </ToggleButton>
-                  ))}
-                </ButtonGroup>
-                <br></br>
-                <ButtonGroup toggle>
-                  {radioSed.map((radio, idx) => (
-                    <ToggleButton
-                      key={idx}
-                      size="xxl"
-                      type="radio"
-                      variant="light"
-                      name="state"
-                      value={radio.name}
-                      checked={state === radio.name}
-                      onChange={e => setState(e.currentTarget.value)}
-                      className={radio.class}
-                    >
-                      {radio.name}
-                    </ToggleButton>
-                  ))}
-                </ButtonGroup>
+      <Container className="mx-auto text-center">
+        <Row>
+          <Col>
+            {/* {mutationLoading && (
+              <Alert variant="info">Sending to database...</Alert>
+            )} */}
+            {mutationError && (
+              <Alert variant="warning">
+                Please ensure the participant ID is entered
+              </Alert>
+            )}
+            <Form.Control
+              className="inputBox"
+              type="text"
+              placeholder="Enter participant ID"
+              onChange={e => setPid(e.currentTarget.value)}
+            />
+            <br></br>
+            <Row>
+              <Col>
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  onClick={e =>
+                    setSync(moment().format("YYYY-MM-DD h:mm:ss SSS"))
+                  }
+                >
+                  Sync with video
+                </Button>
+              </Col>
+              <Col>
+                <Button variant="outline-light disabled" size="lg">
+                  {sync}
+                </Button>
+              </Col>
+            </Row>
+            <br></br>
+            <p>Select sedation state</p>
+            <ButtonGroup toggle vertical="true">
+              <ButtonGroup toggle>
+                {radioPmip.map((radio, idx) => (
+                  <ToggleButton
+                    key={idx}
+                    size="xxl"
+                    type="radio"
+                    variant="light"
+                    name="state"
+                    value={radio.name}
+                    checked={state === radio.name}
+                    onChange={e => setState(e.currentTarget.value)}
+                    className={radio.class}
+                  >
+                    {radio.name}
+                  </ToggleButton>
+                ))}
               </ButtonGroup>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <Line data={data} options={options} />
-            </Col>
-          </Row>
-        </Layout>
-      </ApolloProvider>
+              <br></br>
+              <ButtonGroup toggle>
+                {radioPain.map((radio, idx) => (
+                  <ToggleButton
+                    key={idx}
+                    size="xxl"
+                    type="radio"
+                    variant="light"
+                    name="state"
+                    value={radio.name}
+                    checked={state === radio.name}
+                    onChange={e => setState(e.currentTarget.value)}
+                    className={radio.class}
+                  >
+                    {radio.name}
+                  </ToggleButton>
+                ))}
+              </ButtonGroup>
+              <br></br>
+              <ButtonGroup toggle>
+                {radioWarn.map((radio, idx) => (
+                  <ToggleButton
+                    key={idx}
+                    size="xxl"
+                    type="radio"
+                    variant="light"
+                    name="state"
+                    value={radio.name}
+                    checked={state === radio.name}
+                    onChange={e => setState(e.currentTarget.value)}
+                    className={radio.class}
+                  >
+                    {radio.name}
+                  </ToggleButton>
+                ))}
+              </ButtonGroup>
+              <br></br>
+              <ButtonGroup toggle>
+                {radios.map((radio, idx) => (
+                  <ToggleButton
+                    key={idx}
+                    size="xxl"
+                    type="radio"
+                    variant="light"
+                    name="state"
+                    value={radio.name}
+                    checked={state === radio.name}
+                    onChange={e => setState(e.currentTarget.value)}
+                    className={radio.class}
+                  >
+                    {radio.name}
+                  </ToggleButton>
+                ))}
+              </ButtonGroup>
+              <br></br>
+              <ButtonGroup toggle>
+                {radioSed.map((radio, idx) => (
+                  <ToggleButton
+                    key={idx}
+                    size="xxl"
+                    type="radio"
+                    variant="light"
+                    name="state"
+                    value={radio.name}
+                    checked={state === radio.name}
+                    onChange={e => setState(e.currentTarget.value)}
+                    className={radio.class}
+                  >
+                    {radio.name}
+                  </ToggleButton>
+                ))}
+              </ButtonGroup>
+            </ButtonGroup>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Line data={data} options={options} />
+          </Col>
+        </Row>
+      </Container>
     </>
   )
 }

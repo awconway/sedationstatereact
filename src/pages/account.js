@@ -12,7 +12,12 @@ import SedState from "../components/sedstate"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 
-import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client"
+import {
+  ApolloClient,
+  HttpLink,
+  InMemoryCache,
+  ApolloProvider,
+} from "@apollo/client"
 
 const createApolloClient = authToken => {
   return new ApolloClient({
@@ -63,10 +68,12 @@ export default function Account({ data }) {
           Log Out
         </a>
       </nav>
-      <Router>
-        <Home path="/account/" user={user} />
-        <SedState client={client} path="/account/sedstate" />
-      </Router>
+      <ApolloProvider client={client}>
+        <Router>
+          <Home path="/account/" user={user} />
+          <SedState path="/account/sedstate" client={client} />
+        </Router>
+      </ApolloProvider>
     </>
   )
 }
