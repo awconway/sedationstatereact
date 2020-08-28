@@ -7,31 +7,39 @@
 
 import React from "react"
 import PropTypes from "prop-types"
-import { useStaticQuery, graphql } from "gatsby"
+import { StaticQuery, graphql } from "gatsby"
 import Container from "react-bootstrap/Container"
 import Header from "./header"
+import favicon from "../images/favicon.ico"
+import Helmet from "react-helmet"
 
-const Layout = ({ children }) => {
-  const data = useStaticQuery(graphql`
-    query SiteTitleQuery {
-      site {
-        siteMetadata {
-          title
+const Layout = ({ children }) => (
+  <div>
+    <Helmet>
+      <link rel="icon" href={favicon} />
+    </Helmet>
+
+    <StaticQuery
+      query={graphql`
+        query SiteTitleQuery {
+          site {
+            siteMetadata {
+              title
+            }
+          }
         }
-      }
-    }
-  `)
-
-  return (
-    <>
-      <Header siteTitle={data.site.siteMetadata.title} />
-      <main>
-        <Container>{children}</Container>
-      </main>
-    </>
-  )
-}
-
+      `}
+      render={data => (
+        <>
+          <Header siteTitle={data.site.siteMetadata.title} />
+          <main>
+            <Container>{children}</Container>
+          </main>
+        </>
+      )}
+    />
+  </div>
+)
 Layout.propTypes = {
   children: PropTypes.node.isRequired,
 }

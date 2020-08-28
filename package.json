@@ -1,5 +1,5 @@
 {
-  "name": "Sedation state assessment",
+  "name": "sedation-state-assessment",
   "private": true,
   "description": "Data collection app using auth0 and apollo with hasura database",
   "version": "0.1.0",
