@@ -6,6 +6,7 @@ import ButtonGroup from "react-bootstrap/ButtonGroup"
 import ToggleButton from "react-bootstrap/ToggleButton"
 import { Container, Row, Col, Form, Alert, Button } from "react-bootstrap"
 import moment from "moment"
+import { FaCheck } from "react-icons/fa"
 
 //Optional chart
 // import { defaults, Line } from "react-chartjs-2"
@@ -191,7 +192,7 @@ export default function SedationState({ client }) {
                 {radioPmip.map((radio, idx) => (
                   <ToggleButton
                     key={idx}
-                    size="xxl"
+                    size="lg"
                     type="radio"
                     variant="light"
                     name="state"
@@ -210,7 +211,7 @@ export default function SedationState({ client }) {
                 {radioPain.map((radio, idx) => (
                   <ToggleButton
                     key={idx}
-                    size="xxl"
+                    size="lg"
                     type="radio"
                     variant="light"
                     name="state"
@@ -229,7 +230,7 @@ export default function SedationState({ client }) {
                 {radioWarn.map((radio, idx) => (
                   <ToggleButton
                     key={idx}
-                    size="xxl"
+                    size="lg"
                     type="radio"
                     variant="light"
                     name="state"
@@ -248,7 +249,7 @@ export default function SedationState({ client }) {
                 {radios.map((radio, idx) => (
                   <ToggleButton
                     key={idx}
-                    size="xxl"
+                    size="lg"
                     type="radio"
                     variant="light"
                     name="state"
@@ -267,7 +268,7 @@ export default function SedationState({ client }) {
                 {radioSed.map((radio, idx) => (
                   <ToggleButton
                     key={idx}
-                    size="xxl"
+                    size="lg"
                     type="radio"
                     variant="light"
                     name="state"
@@ -276,6 +277,7 @@ export default function SedationState({ client }) {
                     onChange={e => setState(e.currentTarget.value)}
                     className={radio.class}
                     disabled={pid === null}
+                    icon="add"
                   >
                     {radio.name}
                   </ToggleButton>

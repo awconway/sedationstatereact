@@ -28,6 +28,21 @@ module.exports = {
     },
     `gatsby-plugin-sass`,
     {
+      resolve: `gatsby-plugin-manifest`,
+      options: {
+        name: `Sedation State Assessment`,
+        short_name: `Sedstate`,
+        description: `Data collection for sedation state assessment`,
+        lang: `en`,
+        display: `standalone`,
+        icon: `src/images/icon.png`,
+        start_url: `https://sedationstatereact.netlify.app/`,
+        background_color: `#2d2d2d`,
+        theme_color: `#e4e4e4`,
+      },
+    },
+    `gatsby-plugin-offline`,
+    {
       resolve: `gatsby-plugin-webfonts`,
       options: {
         fonts: {
