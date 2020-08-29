@@ -36,7 +36,7 @@ module.exports = {
         lang: `en`,
         display: `standalone`,
         icon: `src/images/icon.png`,
-        start_url: `https://sedationstatereact.netlify.app/`,
+        start_url: `/`,
         background_color: `#2d2d2d`,
         theme_color: `#e4e4e4`,
       },
