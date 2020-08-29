@@ -202,6 +202,13 @@ export default function SedationState({ client }) {
                     className={radio.class}
                     disabled={pid === null}
                   >
+                    <span
+                      style={{
+                        display: state === radio.name ? "" : "none",
+                      }}
+                    >
+                      <FaCheck />
+                    </span>
                     {radio.name}
                   </ToggleButton>
                 ))}
@@ -221,6 +228,13 @@ export default function SedationState({ client }) {
                     className={radio.class}
                     disabled={pid === null}
                   >
+                    <span
+                      style={{
+                        display: state === radio.name ? "" : "none",
+                      }}
+                    >
+                      <FaCheck />
+                    </span>
                     {radio.name}
                   </ToggleButton>
                 ))}
@@ -240,6 +254,13 @@ export default function SedationState({ client }) {
                     className={radio.class}
                     disabled={pid === null}
                   >
+                    <span
+                      style={{
+                        display: state === radio.name ? "" : "none",
+                      }}
+                    >
+                      <FaCheck />
+                    </span>
                     {radio.name}
                   </ToggleButton>
                 ))}
@@ -259,6 +280,13 @@ export default function SedationState({ client }) {
                     className={radio.class}
                     disabled={pid === null}
                   >
+                    <span
+                      style={{
+                        display: state === radio.name ? "" : "none",
+                      }}
+                    >
+                      <FaCheck />
+                    </span>
                     {radio.name}
                   </ToggleButton>
                 ))}
@@ -279,6 +307,13 @@ export default function SedationState({ client }) {
                     disabled={pid === null}
                     icon="add"
                   >
+                    <span
+                      style={{
+                        display: state === radio.name ? "" : "none",
+                      }}
+                    >
+                      <FaCheck />
+                    </span>
                     {radio.name}
                   </ToggleButton>
                 ))}
