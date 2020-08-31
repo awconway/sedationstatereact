@@ -7,12 +7,10 @@ import {
   getProfile,
   getToken,
 } from "../utils/auth"
-import { Link } from "gatsby"
 import SedState from "../components/sedstate"
-import Layout from "../components/layout"
-import SEO from "../components/seo"
 
 import {
+  ApolloLink,
   ApolloClient,
   HttpLink,
   InMemoryCache,
@@ -21,25 +19,16 @@ import {
 
 const createApolloClient = authToken => {
   return new ApolloClient({
-    link: new HttpLink({
-      uri: "https://honest-longhorn-93.hasura.app/v1/graphql",
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
-    }),
+    link: ApolloLink.from([
+      new HttpLink({
+        uri: "https://honest-longhorn-93.hasura.app/v1/graphql",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      }),
+    ]),
     cache: new InMemoryCache(),
   })
-}
-
-const Home = ({ user }) => {
-  return (
-    <>
-      <Layout>
-        <SEO title="Home" />
-        <p>Hi, {user.name ? user.name : "friend"}!</p>
-      </Layout>
-    </>
-  )
 }
 
 export default function Account({ data }) {
@@ -56,8 +45,6 @@ export default function Account({ data }) {
   return (
     <>
       <nav>
-        <Link to="/account/">Home</Link>{" "}
-        <Link to="/account/sedstate/">Start monitoring</Link>{" "}
         <a
           href="#logout"
           onClick={e => {
@@ -65,13 +52,12 @@ export default function Account({ data }) {
             e.preventDefault()
           }}
         >
-          Log Out
+          Log Out from {user.name} account
         </a>
       </nav>
       <ApolloProvider client={client}>
         <Router>
-          <Home path="/account/" user={user} />
-          <SedState path="/account/sedstate" client={client} />
+          <SedState path="/account/" client={client} />
         </Router>
       </ApolloProvider>
     </>

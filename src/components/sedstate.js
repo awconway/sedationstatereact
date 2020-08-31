@@ -8,6 +8,9 @@ import { Container, Row, Col, Form, Alert, Button } from "react-bootstrap"
 import moment from "moment"
 import { FaCheck } from "react-icons/fa"
 
+import useSound from "use-sound"
+import boopSfx from "../sounds/boop.mp3"
+
 //Optional chart
 // import { defaults, Line } from "react-chartjs-2"
 // defaults.global.defaultFontFamily = "Fira Code"
@@ -149,6 +152,8 @@ export default function SedationState({ client }) {
 
   ///
 
+  const [play] = useSound(boopSfx)
+
   return (
     <>
       <Container className="mx-auto text-center">
@@ -172,9 +177,10 @@ export default function SedationState({ client }) {
                 <Button
                   size="lg"
                   variant="secondary"
-                  onClick={e =>
+                  onClick={e => {
                     setSync(moment().format("YYYY-MM-DD h:mm:ss SSS"))
-                  }
+                    play()
+                  }}
                 >
                   Sync with video
                 </Button>
