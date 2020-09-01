@@ -11,6 +11,10 @@ import { FaCheck } from "react-icons/fa"
 import useSound from "use-sound"
 import boopSfx from "../sounds/boop.mp3"
 
+//csv
+
+import CsvDownloader from "react-csv-downloader"
+
 //Optional chart
 // import { defaults, Line } from "react-chartjs-2"
 // defaults.global.defaultFontFamily = "Fira Code"
@@ -82,7 +86,9 @@ export default function SedationState({ client }) {
   ]
 
   const isMounted = useRef(false)
-
+  //csv
+  const [states, setStates] = useState([])
+  //
   useEffect(() => {
     if (isMounted.current) {
       const user = getProfile()
@@ -94,11 +100,30 @@ export default function SedationState({ client }) {
           user_id: user["https://hasura.io/jwt/claims"]["x-hasura-user-id"],
         },
       })
+      //csv
+      setStates(states => [
+        ...states,
+        { states: state, time: moment().format("YYYY-MM-DD h:mm:ss SSS") },
+      ])
+      //
     } else {
       isMounted.current = true
     }
   }, [state])
 
+  //csv
+
+  const columns = [
+    {
+      id: "states",
+      displayName: "State",
+    },
+    {
+      id: "time",
+      displayName: "Time",
+    },
+  ]
+  //
   //Chart
 
   // const [states, setStates] = useState([])
@@ -327,9 +352,21 @@ export default function SedationState({ client }) {
             </ButtonGroup>
           </Col>
         </Row>
-        {/* <Row>
-          <Col><Line data={data} options={options} /></Col>
-        </Row> */}
+        <Row>
+          <Col>
+            <br></br>
+            <br></br>
+            <CsvDownloader
+              className="btn btn-primary"
+              filename={pid}
+              columns={columns}
+              datas={states}
+            >
+              <Button>Download to CSV</Button>
+            </CsvDownloader>
+            {/* <Line data={data} options={options} /> */}
+          </Col>
+        </Row>
       </Container>
     </>
   )

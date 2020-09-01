@@ -10,22 +10,25 @@ import {
 import SedState from "../components/sedstate"
 
 import {
-  ApolloLink,
+  from,
   ApolloClient,
   HttpLink,
   InMemoryCache,
   ApolloProvider,
 } from "@apollo/client"
 
+import { RetryLink } from "@apollo/client/link/retry"
+
 const createApolloClient = authToken => {
   return new ApolloClient({
-    link: ApolloLink.from([
+    link: from([
       new HttpLink({
         uri: "https://honest-longhorn-93.hasura.app/v1/graphql",
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
       }),
+      new RetryLink(),
     ]),
     cache: new InMemoryCache(),
   })
