@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react"
-import { gql, useMutation } from "@apollo/client"
-import { getProfile } from "../utils/auth"
+// import { gql, useMutation } from "@apollo/client"
+// import { getProfile } from "../utils/auth"
 
 import ButtonGroup from "react-bootstrap/ButtonGroup"
 import ToggleButton from "react-bootstrap/ToggleButton"
@@ -20,33 +20,33 @@ import CsvDownloader from "react-csv-downloader"
 // defaults.global.defaultFontFamily = "Fira Code"
 //
 
-export default function SedationState({ client }) {
+export default function SedationState() {
   const [pid, setPid] = useState(null)
   const [state, setState] = useState(null)
   const [sync, setSync] = useState("Synced time")
-  const mutation = gql`
-    mutation statesMutation(
-      $user_id: String = ""
-      $time: String = ""
-      $state: String = ""
-      $pid: String = ""
-    ) {
-      insert_states(
-        objects: { pid: $pid, state: $state, time: $time, user_id: $user_id }
-      ) {
-        returning {
-          id
-        }
-      }
-    }
-  `
-  const [
-    updateStates,
-    {
-      // loading: mutationLoading, //uncomment if a loading sign is wanted
-      error: mutationError,
-    },
-  ] = useMutation(mutation)
+  // const mutation = gql`
+  //   mutation statesMutation(
+  //     $user_id: String = ""
+  //     $time: String = ""
+  //     $state: String = ""
+  //     $pid: String = ""
+  //   ) {
+  //     insert_states(
+  //       objects: { pid: $pid, state: $state, time: $time, user_id: $user_id }
+  //     ) {
+  //       returning {
+  //         id
+  //       }
+  //     }
+  //   }
+  // `
+  // const [
+  //   updateStates,
+  //   {
+  //     // loading: mutationLoading, //uncomment if a loading sign is wanted
+  //     error: mutationError,
+  //   },
+  // ] = useMutation(mutation)
 
   const radios = [{ name: "Ideal", class: "ideal mx-2 my-2" }]
   const radioWarn = [
@@ -91,15 +91,15 @@ export default function SedationState({ client }) {
   //
   useEffect(() => {
     if (isMounted.current) {
-      const user = getProfile()
-      updateStates({
-        variables: {
-          pid: pid,
-          state: state,
-          time: moment().format("YYYY-MM-DD h:mm:ss SSS"),
-          user_id: user["https://hasura.io/jwt/claims"]["x-hasura-user-id"],
-        },
-      })
+      // const user = getProfile()
+      // updateStates({
+      //   variables: {
+      //     pid: pid,
+      //     state: state,
+      //     time: moment().format("YYYY-MM-DD h:mm:ss SSS"),
+      //     user_id: user["https://hasura.io/jwt/claims"]["x-hasura-user-id"],
+      //   },
+      // })
       //csv
       setStates(states => [
         ...states,
@@ -187,9 +187,9 @@ export default function SedationState({ client }) {
             {/* {mutationLoading && (
               <Alert variant="info">Sending to database...</Alert>
             )} */}
-            {mutationError && (
+            {/* {mutationError && (
               <Alert variant="warning">Error sending to database</Alert>
-            )}
+            )} */}
             <Form.Control
               className="inputBox"
               type="text"
