@@ -22,13 +22,23 @@ import { RetryLink } from "@apollo/client/link/retry"
 const createApolloClient = authToken => {
   return new ApolloClient({
     link: from([
+      new RetryLink({
+        delay: {
+          initial: 300,
+          max: Infinity,
+          jitter: true,
+        },
+        attempts: {
+          max: Infinity,
+          retryIf: (error, _operation) => !!error,
+        },
+      }),
       new HttpLink({
         uri: "https://honest-longhorn-93.hasura.app/v1/graphql",
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
       }),
-      new RetryLink(),
     ]),
     cache: new InMemoryCache(),
   })

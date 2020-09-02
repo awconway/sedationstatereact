@@ -41,7 +41,6 @@ module.exports = {
         theme_color: `#e4e4e4`,
       },
     },
-    `gatsby-plugin-offline`,
     {
       resolve: `gatsby-plugin-webfonts`,
       options: {
@@ -55,5 +54,6 @@ module.exports = {
         },
       },
     },
+    `gatsby-plugin-offline`,
   ],
 }
