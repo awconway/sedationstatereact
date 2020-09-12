@@ -24,19 +24,19 @@ body {
 }
 .pain {
   background-color: rgba(220, 53, 69, 0.6);
-  color: #e4e4e4;
+  color: $body-color;
   border: rgba(220, 53, 69, 0.6);
 }
 
 .warn.active {
   background-color: rgb(255, 193, 8) !important;
-  color: #2d2d2d;
+  color: $body-bg;
   padding: 20px;
   border: rgb(255, 193, 8) !important;
 }
 .warn {
   background-color: rgba(255, 193, 8, 0.6);
-  color: #2d2d2d;
+  color: $body-bg;
   border: rgba(255, 193, 8, 0.6);
 }
 

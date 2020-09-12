@@ -1,94 +1,32 @@
 import React, { useState, useEffect, useRef } from "react"
-import { gql, useMutation } from "@apollo/client"
 import { getProfile } from "../utils/auth"
-
 import ButtonGroup from "react-bootstrap/ButtonGroup"
 import ToggleButton from "react-bootstrap/ToggleButton"
 import { Container, Row, Col, Form, Alert, Button } from "react-bootstrap"
-import moment from "moment"
 import { FaCheck } from "react-icons/fa"
-
-import useSound from "use-sound"
-import boopSfx from "../sounds/boop.mp3"
-
-//csv
-
+import Sync from "../components/sync"
+import moment from "moment"
 import CsvDownloader from "react-csv-downloader"
+import { useMutation } from "@apollo/client"
+import mutation from "../queries/mutation.gql"
 
-//Optional chart
-// import { defaults, Line } from "react-chartjs-2"
-// defaults.global.defaultFontFamily = "Fira Code"
-//
+//classNames and values for sedation state buttons
+const radios = require("../data/radio.json")
 
 export default function SedationState({ client }) {
+  //hook for entering participant ID
   const [pid, setPid] = useState(null)
+  //hook for value of sedation state buttons
   const [state, setState] = useState(null)
-  const [sync, setSync] = useState("Synced time")
-  const mutation = gql`
-    mutation statesMutation(
-      $user_id: String = ""
-      $time: String = ""
-      $state: String = ""
-      $pid: String = ""
-    ) {
-      insert_states(
-        objects: { pid: $pid, state: $state, time: $time, user_id: $user_id }
-      ) {
-        returning {
-          id
-        }
-      }
-    }
-  `
-  const [
-    updateStates,
-    {
-      // loading: mutationLoading, //uncomment if a loading sign is wanted
-      error: mutationError,
-    },
-  ] = useMutation(mutation)
-
-  const radios = [{ name: "Ideal", class: "ideal mx-2 my-2" }]
-  const radioWarn = [
-    { name: "Expression of pain on face", class: "warn mx-2 my-2" },
-    {
-      name: "Movement requiring gentle immobilization",
-      class: "warn mx-2 my-2",
-    },
-  ]
-  const radioPmip = [
-    {
-      name: "Pain and movement impeding procedure",
-      class: "pain mx-2 my-2",
-    },
-  ]
-
-  const radioPain = [
-    {
-      name: "Movement impeding procedure",
-      class: "pain mx-2 my-2",
-    },
-    {
-      name: "Pain impeding procedure",
-      class: "pain mx-2 my-2",
-    },
-  ]
-
-  const radioSed = [
-    {
-      name: "Airway intervention",
-      class: "airway mx-2 my-2",
-    },
-    {
-      name: "Over-sedated",
-      class: "sed mx-2 my-2",
-    },
-  ]
-
-  const isMounted = useRef(false)
-  //csv
+  //hook for csv download
   const [states, setStates] = useState([])
-  //
+
+  //hook for sending query to database
+  const [updateStates, { error: mutationError }] = useMutation(mutation)
+
+  //hook for updating state on button press but not on first load
+  const isMounted = useRef(false)
+
   useEffect(() => {
     if (isMounted.current) {
       const user = getProfile()
@@ -100,7 +38,8 @@ export default function SedationState({ client }) {
           user_id: user["https://hasura.io/jwt/claims"]["x-hasura-user-id"],
         },
       })
-      //csv
+
+      // data for csv download
       setStates(states => [
         ...states,
         { states: state, time: moment().format("YYYY-MM-DD h:mm:ss SSS") },
@@ -111,7 +50,7 @@ export default function SedationState({ client }) {
     }
   }, [state])
 
-  //csv
+  //object format for csv download
 
   const columns = [
     {
@@ -123,70 +62,12 @@ export default function SedationState({ client }) {
       displayName: "Time",
     },
   ]
-  //
-  //Chart
-
-  // const [states, setStates] = useState([])
-  // const [times, setTimes] = useState([])
-  // const data = {
-  //   labels: times,
-  //   datasets: [
-  //     {
-  //       label: "Sedation state",
-  //       fill: false,
-  //       borderColor: "#e4e4e4",
-  //       data: states,
-  //       steppedLine: true,
-  //     },
-  //   ],
-  // }
-
-  // const options = {
-  //   elements: {
-  //     point: {
-  //       radius: 0,
-  //     },
-  //   },
-  //   scales: {
-  //     yAxes: [
-  //       {
-  //         type: "category",
-  //         labels: [
-  //           "Pain and movement impeding procedure",
-  //           "Movement impeding procedure",
-  //           "Pain impeding procedure",
-  //           "Expression of pain on face",
-  //           "Movement requiring gentle immobilization",
-  //           "Ideal",
-  //           "Airway intervention",
-  //           "Over-sedated",
-  //         ],
-  //       },
-  //     ],
-  //   },
-  // }
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setStates(states => states.concat(state))
-  //     setTimes(times => times.concat(moment().format("h:mm:ss A")))
-  //     //   console.log(states)
-  //   }, 1000)
-  //   return () => clearInterval(interval)
-  // })
-
-  ///
-
-  const [play] = useSound(boopSfx)
 
   return (
     <>
       <Container className="mx-auto text-center">
         <Row>
           <Col>
-            {/* {mutationLoading && (
-              <Alert variant="info">Sending to database...</Alert>
-            )} */}
             {mutationError && (
               <Alert variant="warning">Error sending to database</Alert>
             )}
@@ -197,158 +78,33 @@ export default function SedationState({ client }) {
               onChange={e => setPid(e.currentTarget.value)}
             />
             <br></br>
-            <Row>
-              <Col className="mx-auto">
-                <Button
-                  size="lg"
-                  variant="secondary"
-                  onClick={e => {
-                    setSync(moment().format("YYYY-MM-DD h:mm:ss SSS"))
-                    play()
-                  }}
-                >
-                  Sync with video
-                </Button>
-              </Col>
-              <Col className="mx-auto">
-                <Button variant="outline-light disabled" size="lg">
-                  {sync}
-                </Button>
-              </Col>
-            </Row>
+            <Sync />
             <br></br>
             <p>Select sedation state</p>
             <ButtonGroup toggle vertical="true">
-              <ButtonGroup toggle>
-                {radioPmip.map((radio, idx) => (
-                  <ToggleButton
-                    key={idx}
-                    size="lg"
-                    type="radio"
-                    variant="light"
-                    name="state"
-                    value={radio.name}
-                    checked={state === radio.name}
-                    onChange={e => setState(e.currentTarget.value)}
-                    className={radio.class}
-                    disabled={pid === null}
+              {radios.map((radio, idx) => (
+                <ToggleButton
+                  key={idx}
+                  size="lg"
+                  type="radio"
+                  variant="light"
+                  name="state"
+                  value={radio.name}
+                  checked={state === radio.name}
+                  onChange={e => setState(e.currentTarget.value)}
+                  className={radio.class}
+                  disabled={pid === null}
+                >
+                  <span
+                    style={{
+                      display: state === radio.name ? "" : "none",
+                    }}
                   >
-                    <span
-                      style={{
-                        display: state === radio.name ? "" : "none",
-                      }}
-                    >
-                      <FaCheck />
-                    </span>
-                    {radio.name}
-                  </ToggleButton>
-                ))}
-              </ButtonGroup>
-              <br></br>
-              <ButtonGroup toggle>
-                {radioPain.map((radio, idx) => (
-                  <ToggleButton
-                    key={idx}
-                    size="lg"
-                    type="radio"
-                    variant="light"
-                    name="state"
-                    value={radio.name}
-                    checked={state === radio.name}
-                    onChange={e => setState(e.currentTarget.value)}
-                    className={radio.class}
-                    disabled={pid === null}
-                  >
-                    <span
-                      style={{
-                        display: state === radio.name ? "" : "none",
-                      }}
-                    >
-                      <FaCheck />
-                    </span>
-                    {radio.name}
-                  </ToggleButton>
-                ))}
-              </ButtonGroup>
-              <br></br>
-              <ButtonGroup toggle>
-                {radioWarn.map((radio, idx) => (
-                  <ToggleButton
-                    key={idx}
-                    size="lg"
-                    type="radio"
-                    variant="light"
-                    name="state"
-                    value={radio.name}
-                    checked={state === radio.name}
-                    onChange={e => setState(e.currentTarget.value)}
-                    className={radio.class}
-                    disabled={pid === null}
-                  >
-                    <span
-                      style={{
-                        display: state === radio.name ? "" : "none",
-                      }}
-                    >
-                      <FaCheck />
-                    </span>
-                    {radio.name}
-                  </ToggleButton>
-                ))}
-              </ButtonGroup>
-              <br></br>
-              <ButtonGroup toggle>
-                {radios.map((radio, idx) => (
-                  <ToggleButton
-                    key={idx}
-                    size="lg"
-                    type="radio"
-                    variant="light"
-                    name="state"
-                    value={radio.name}
-                    checked={state === radio.name}
-                    onChange={e => setState(e.currentTarget.value)}
-                    className={radio.class}
-                    disabled={pid === null}
-                  >
-                    <span
-                      style={{
-                        display: state === radio.name ? "" : "none",
-                      }}
-                    >
-                      <FaCheck />
-                    </span>
-                    {radio.name}
-                  </ToggleButton>
-                ))}
-              </ButtonGroup>
-              <br></br>
-              <ButtonGroup toggle>
-                {radioSed.map((radio, idx) => (
-                  <ToggleButton
-                    key={idx}
-                    size="lg"
-                    type="radio"
-                    variant="light"
-                    name="state"
-                    value={radio.name}
-                    checked={state === radio.name}
-                    onChange={e => setState(e.currentTarget.value)}
-                    className={radio.class}
-                    disabled={pid === null}
-                    icon="add"
-                  >
-                    <span
-                      style={{
-                        display: state === radio.name ? "" : "none",
-                      }}
-                    >
-                      <FaCheck />
-                    </span>
-                    {radio.name}
-                  </ToggleButton>
-                ))}
-              </ButtonGroup>
+                    <FaCheck />
+                  </span>
+                  {radio.name}
+                </ToggleButton>
+              ))}
             </ButtonGroup>
           </Col>
         </Row>
@@ -364,7 +120,6 @@ export default function SedationState({ client }) {
             >
               <Button>Download to CSV</Button>
             </CsvDownloader>
-            {/* <Line data={data} options={options} /> */}
           </Col>
         </Row>
       </Container>

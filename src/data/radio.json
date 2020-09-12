@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Pain and movement impeding procedure",
+    "class": "pain mx-2 my-2"
+  },
+  {
+    "name": "Movement impeding procedure",
+    "class": "pain mx-2 my-2"
+  },
+  {
+    "name": "Pain impeding procedure",
+    "class": "pain mx-2 my-2"
+  },
+  { "name": "Expression of pain on face", "class": "warn mx-2 my-2" },
+  {
+    "name": "Movement requiring gentle immobilization",
+    "class": "warn mx-2 my-2"
+  },
+  { "name": "Ideal", "class": "ideal mx-2 my-2" },
+
+  {
+    "name": "Airway intervention",
+    "class": "airway mx-2 my-2"
+  },
+  {
+    "name": "Over-sedated",
+    "class": "sed mx-2 my-2"
+  }
+]

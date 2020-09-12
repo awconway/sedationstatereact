@@ -6487,6 +6487,11 @@ gatsby-page-utils@^0.2.23:
     lodash "^4.17.15"
     micromatch "^3.1.10"
 
+gatsby-plugin-graphql-loader@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/gatsby-plugin-graphql-loader/-/gatsby-plugin-graphql-loader-1.0.2.tgz#5efc4fd511fd62fb1b2e52df3b00e1e6c18b9852"
+  integrity sha512-IX5DKZCVxB3Z6D5A4rGLuadNZKKmoRDVYPGaA8l2IKlShsr0ajgQli6ezJ18CJd1cdgolC0ONVHWcOoITpLUFQ==
+
 gatsby-plugin-manifest@^2.4.26:
   version "2.4.27"
   resolved "https://registry.yarnpkg.com/gatsby-plugin-manifest/-/gatsby-plugin-manifest-2.4.27.tgz#e87102137efcb1fe66ab27f913241f9c1b2f4fa7"

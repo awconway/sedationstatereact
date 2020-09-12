@@ -1,0 +1,14 @@
+mutation statesMutation(
+  $user_id: String = ""
+  $time: String = ""
+  $state: String = ""
+  $pid: String = ""
+) {
+  insert_states(
+    objects: { pid: $pid, state: $state, time: $time, user_id: $user_id }
+  ) {
+    returning {
+      id
+    }
+  }
+}
