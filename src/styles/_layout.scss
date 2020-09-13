@@ -10,6 +10,7 @@ body {
   padding: 20px;
   border: rgba(40, 167, 69, 1) !important;
 }
+
 .ideal {
   background-color: rgba(40, 167, 69, 0.6);
   color: $body-color !important;
@@ -46,6 +47,7 @@ body {
   padding: 20px;
   border: rgb(92, 92, 92);
 }
+
 .sed {
   background-color: rgba(92, 92, 92, 0.6);
   color: $body-color;
@@ -63,13 +65,11 @@ body {
   color: $body-color;
   border: rgba(100, 100, 100, 0.6);
 }
-
 .inputBox {
   background-color: $body-bg;
   color: $body-color;
   text-align: center;
 }
-
 nav {
   padding: 20px;
 }
