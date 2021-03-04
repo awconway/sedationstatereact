@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useRef } from "react"
-import { getProfile } from "../utils/auth"
 import ButtonGroup from "react-bootstrap/ButtonGroup"
 import ToggleButton from "react-bootstrap/ToggleButton"
-import { Container, Row, Col, Form, Alert, Button } from "react-bootstrap"
+import { Container, Row, Col, Form, Button } from "react-bootstrap"
 import { FaCheck } from "react-icons/fa"
 import Sync from "../components/sync"
 import moment from "moment"
 import CsvDownloader from "react-csv-downloader"
-import { useMutation } from "@apollo/client"
-import mutation from "../queries/mutation.gql"
+
 
 //classNames and values for sedation state buttons
 const radios = require("../data/radio.json")
@@ -21,23 +19,13 @@ export default function SedationState({ client }) {
   //hook for csv download
   const [states, setStates] = useState([])
 
-  //hook for sending query to database
-  const [updateStates, { error: mutationError }] = useMutation(mutation)
 
   //hook for updating state on button press but not on first load
   const isMounted = useRef(false)
 
   useEffect(() => {
     if (isMounted.current) {
-      const user = getProfile()
-      updateStates({
-        variables: {
-          pid: pid,
-          state: state,
-          time: moment().format("YYYY-MM-DD h:mm:ss SSS"),
-          user_id: user["https://hasura.io/jwt/claims"]["x-hasura-user-id"],
-        },
-      })
+
 
       // data for csv download
       setStates(states => [
@@ -68,9 +56,6 @@ export default function SedationState({ client }) {
       <Container className="mx-auto text-center">
         <Row>
           <Col>
-            {mutationError && (
-              <Alert variant="warning">Error sending to database</Alert>
-            )}
             <Form.Control
               className="inputBox"
               type="text"
