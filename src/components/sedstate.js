@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from "react"
 import ButtonGroup from "react-bootstrap/ButtonGroup"
 import ToggleButton from "react-bootstrap/ToggleButton"
-import { Container, Row, Col, Form, Button } from "react-bootstrap"
+import { Container, Row, Col, Form } from "react-bootstrap"
 import { FaCheck } from "react-icons/fa"
 import Sync from "../components/sync"
 import moment from "moment"
-import CsvDownloader from "react-csv-downloader"
-
+import ReactExport from "react-export-excel";
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 //classNames and values for sedation state buttons
 const radios = require("../data/radio.json")
@@ -37,19 +39,6 @@ export default function SedationState({ client }) {
       isMounted.current = true
     }
   }, [state])
-
-  //object format for csv download
-
-  const columns = [
-    {
-      id: "states",
-      displayName: "State",
-    },
-    {
-      id: "time",
-      displayName: "Time",
-    },
-  ]
 
   return (
     <>
@@ -97,14 +86,14 @@ export default function SedationState({ client }) {
           <Col>
             <br></br>
             <br></br>
-            <CsvDownloader
-              className="btn btn-primary"
-              filename={pid}
-              columns={columns}
-              datas={states}
-            >
-              <Button>Download to CSV</Button>
-            </CsvDownloader>
+            <ExcelFile element={<button 
+            className="btn btn-primary">Download Data</button>}
+            filename={pid}>
+                <ExcelSheet data={states} name="States">
+                    <ExcelColumn label="State" value="states"/>
+                    <ExcelColumn label="Time" value="time"/>
+                </ExcelSheet>
+                </ExcelFile>
           </Col>
         </Row>
       </Container>

@@ -12,6 +12,11 @@ exports.onCreatePage = async ({ page, actions }) => {
 }
 
 exports.onCreateWebpackConfig = ({ stage, loaders, actions }) => {
+  actions.setWebpackConfig({
+    node: {
+      fs: "empty",
+    },
+  })
   if (stage === "build-html") {
     /*
      * During the build step, `auth0-js` will break because it relies on
